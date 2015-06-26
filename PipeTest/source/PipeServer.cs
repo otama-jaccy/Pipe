@@ -9,12 +9,14 @@ using System.Diagnostics;
 class PipeServer
 {
     String pipe_name;
-    public PipeServer(String pipe_name)
+    Dictionary<string, string> data;
+    public PipeServer(String pipe_name, Dictionary<string, string> data)
     {
         this.pipe_name = pipe_name;
+        this.data = data;
     }
 
-    public void send(Dictionary<string, string> data)
+    public void send()
     {
         NamedPipeServerStream pipe_server =
             new NamedPipeServerStream(pipe_name, PipeDirection.InOut);
@@ -25,7 +27,11 @@ class PipeServer
         {
             StreamWriter sw = new StreamWriter(pipe_server);
             sw.AutoFlush = true;
-            sw.WriteLine("hogehoge");
+            foreach (string key in data.Keys)
+            {
+                string d = key + " " + data[key];
+                sw.WriteLine(d);
+            }
             sw.Close();
         }
         catch (IOException e)
